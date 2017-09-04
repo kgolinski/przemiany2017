@@ -28,6 +28,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
         void saveScreenshot(ofxDatGuiButtonEvent e);
+        void regenerateSeed(ofxDatGuiButtonEvent e);
     
         ofxOscReceiver receiver;
     
@@ -36,37 +37,13 @@ class ofApp : public ofBaseApp{
         ofPlanePrimitive water;
         ofShader groundShader, waterShader;
         ofImage groundTex, waterTex, snowTex;
+        ofFbo treeFbo;
     
         ofxCvGrayscaleImage grayImage;
     
         ofxDatGui* sliders;
         ofxDatGui* toggles;
         ofxDatGui* actions;
-    
-    
-    // PARAMETRY:
-    // wysokosc gor +
-    // gestosc gor +
-    // erozja +
-    
-    // rodzaj lasow +
-    // ilosc lasow +
-    // color lasow +
-    
-    // klimat/temperatura (snieg) +
-    
-    // poziom wody +
-    // kolor wody +
-    // typ gleby +
-    // kat kamery +
-    // rotacja -
-    // skala +
-    
-    
-    // ilosc 'zwierzatek' (?)
-    // wielkosc 'zwierzatek' (?)
-    
-    //mozliwosc zamrozenia jakiegos parametru
     
         ofxDatGuiSlider* height;
         ofxDatGuiSlider* density;
@@ -114,5 +91,12 @@ class ofApp : public ofBaseApp{
     
         ofColor waterColor1 = ofColor::fromHex(0x77b35a);
         ofColor waterColor2 = ofColor::fromHex(0x5a9bb3);
+    
+        ofColor treeColor1 = ofColor::fromHex(0x502b00);
+        ofColor treeColor2 = ofColor::fromHex(0x297d00);
+    
         float noiseSeed;
+    
+        vector<ofVec2f> trees;
+        int maxTreeCount = 2000;
 };

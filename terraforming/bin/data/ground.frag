@@ -2,6 +2,7 @@
 
 uniform sampler2DRect tex0;
 uniform sampler2DRect tex1;
+uniform sampler2DRect tex2;
 uniform vec3 color;
 varying vec2 texCoordVarying;
 
@@ -11,6 +12,7 @@ void main()
     vec4 texColor = texture2DRect(tex0, texCoordVarying);
     vec2 snowCoord = vec2(texCoordVarying.x*4.0, texCoordVarying.y*4.0);
     vec4 snowColor = texture2DRect(tex1, snowCoord);
+    vec4 treeColor = texture2DRect(tex2, snowCoord);
 
     vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -23,6 +25,7 @@ void main()
     white.g*= texColor.g*2.0;
     white.b*= texColor.b*2.0;
 
+    outColor = mix(outColor, treeColor, treeColor.a);
     outColor = mix(outColor, white, snowColor.r);
 
     gl_FragColor = outColor;
