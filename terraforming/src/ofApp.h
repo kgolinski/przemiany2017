@@ -114,5 +114,5 @@ class ofApp : public ofBaseApp{
     
         ofColor waterColor1 = ofColor::fromHex(0x77b35a);
         ofColor waterColor2 = ofColor::fromHex(0x5a9bb3);
-    
+        float noiseSeed;
 };

@@ -2,28 +2,6 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
-    // PARAMETRY:
-    // wysokosc gor +
-    // gestosc gor
-    // erozja
-    
-    // rodzaj lasow
-    // ilosc lasow
-    
-    // klimat/temperatura (snieg)
-    // poziom wody
-    // kolor wody
-    // typ gleby
-    // kat kamery +
-    // skala +
-    
-    // predkosc rotacji(?)
-    // ilosc 'zwierzatek' (?)
-    // wielkosc 'zwierzatek' (?)
-    
-    //guzik do zapisu screenshota
-    //mozliwosc zamrozenia jakiegos parametru
     
     ofEnableSmoothing();
     ofSetVerticalSync(true);
@@ -44,8 +22,7 @@ void ofApp::setup(){
     water.mapTexCoordsFromTexture(waterTex.getTextureReference());
 
     sliders = new ofxDatGui();
-    //sliders->addHeader("Parameters");
-    
+
     height = sliders->addSlider("Height", 0.0, 1.0, 0.2);
     density = sliders->addSlider("Density", 0.0, 1.0, 0.0);
     erosion = sliders->addSlider("Erosion", 0.0, 1.0, 0.0);
@@ -56,7 +33,7 @@ void ofApp::setup(){
     waterColor = sliders->addSlider("Water Color", 0.0, 1.0, 0.5);
     waterOpacity = sliders->addSlider("Water Opacity", 0.0, 1.0, 0.4);
     sliders->addBreak();
-    climate = sliders->addSlider("Climate", 0.0, 1.0, 0.5);
+    climate = sliders->addSlider("Climate", 0.0, 1.0, 0.8);
     treeAmount = sliders->addSlider("Tree Amount", 0.0, 1.0, 0.5); //!
     treeType = sliders->addSlider("Tree Type", 0.0, 1.0, 0.5); //!
     treeColor = sliders->addSlider("Tree Color", 0.0, 1.0, 0.5); //!
@@ -90,23 +67,24 @@ void ofApp::setup(){
     
     actions = new ofxDatGui();
     actions->setPosition(542, 0);
-    //actions->addHeader("Actions");
     actions->addButton("Save screenshot (S)")->onButtonEvent(this, &ofApp::saveScreenshot);
     ofxDatGuiLog::quiet();
     
-    //camera.setDistance(500.0);
-    //camera.setNearClip(0.0001);
-    //camera.setFarClip(1000.0);
     
-    camera.lookAt(ofVec3f(0.0, 0.0, 0.0));
+    sliders->setVisible(false);
+    toggles->setVisible(false);
+    actions->setVisible(false);
+    
+    //camera.lookAt(ofVec3f(0.0, 0.0, 0.0));
     camera.disableMouseInput();
+    
+    noiseSeed = ofRandom(100.0);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
     float noiseScale =  ofMap(density->getValue(), 0.0, 1.0, 0.01, 0.1);
-    //float noiseVel = 1;//ofGetElapsedTimef();
     
     ofPixels &groundPixels = groundTex.getPixels();
     int w = groundTex.getWidth();
@@ -114,7 +92,7 @@ void ofApp::update(){
     for(int y=0; y<h; y++) {
         for(int x=0; x<w; x++) {
             int i = y * w + x;
-            float noiseValue1 = ofNoise(x * noiseScale, y * noiseScale, 1);
+            float noiseValue1 = ofNoise(x * noiseScale, y * noiseScale, noiseSeed);
             float noiseValue2 = ofNoise(x/200.0, y/200.0, 200);
             groundPixels[i] = 255 * (noiseValue1*noiseValue2);
         }
@@ -209,18 +187,9 @@ void ofApp::update(){
 void ofApp::drawScene(){
     
     ofEnableDepthTest();
-    //ofPushMatrix();
     
     ofSetColor(255);
-    
-    //ofTranslate(ofGetWidth()/2.0, ofGetHeight()/2.0);
-    //float s = ofMap(distance->getValue(), 0.0, 1.0, 0.1, 2.0);
-    //ofScale(s,s,s);
-    //ofTranslate(0, 0, ofMap(baseLevel->getValue(), 0.0, 1.0, -200.0*s, 200.0*s));
-    //ofRotateX(ofMap(cameraAngle->getValue(), 0.0, 1.0, 15.0, 90.0));
-    //ofRotateZ(ofMap(rotation->getValue(), 0.0, 1.0, 0.0, 360.0));
-    //ofRotateZ(rotation->getValue());
-    
+
     groundTex.getTextureReference().bind();
     groundShader.begin();
     groundShader.setUniformTexture("tex1", snowTex, 2);
@@ -231,7 +200,6 @@ void ofApp::drawScene(){
     groundShader.setUniform3f("color", outGround.r/255.0, outGround.g/255.0, outGround.b/255.0);
     
     ground.draw();
-    //ground.drawWireframe();
     groundShader.end();
     groundTex.getTextureReference().unbind();
     
@@ -244,68 +212,19 @@ void ofApp::drawScene(){
     
     waterShader.setUniform4f("color", outWater.r/255.0, outWater.g/255.0, outWater.b/255.0,
                              ofMap(waterOpacity->getValue(), 0.0, 1.0, 0.1, 0.85));
-    //ofPushMatrix();
     ofTranslate(0, 0, ofMap(waterLevel->getValue(), 0.0, 1.0, -300.0, 300.0));
     water.draw();
     
-    //ground.drawWireframe();
     waterShader.end();
     waterTex.getTextureReference().unbind();
-    //ofPopMatrix();
-    
-    //ofSetColor(255,0,0);
-    //base.drawWireframe();
-    
-    // boczki
-    
-    /*ofSetColor(128);
-     float depth = height->getValue()/2.0;
-     ofPixels &pixels = img.getPixels();
-     
-     
-     ofBeginShape();
-     ofVertex(-size/2.0, size/2.0, -depth);
-     ofVertex(-size/2.0, -size/2.0, -depth);
-     
-     for(int i=0;i<subdivisions;i++){
-     int p = (int)pixels[i*subdivisions];
-     float h = -1.0 + (p/255.0) * 2.0;
-     ofVertex(-size/2.0, -size/2.0+i*(size/subdivisions), h*height->getValue());
-     }
-     ofEndShape();
-     
-     
-     ofBeginShape();
-     
-     ofVertex(size/2.0, -size/2.0, -depth);
-     ofVertex(-size/2.0, -size/2.0, -depth);
-     
-     for(int i=0;i<subdivisions;i++){
-     int p = (int)pixels[i];
-     float h = -1.0 + ((((float)p)/255.0));
-     ofVertex(-size/2.0+i*(size/(subdivisions-1)), -size/2.0, depth+h*height->getValue());
-     }
-     ofEndShape(true);
-     */
-    
-    //ofPopMatrix();
-    //snowTex.draw(ofGetWidth()-200.0,ofGetHeight()-200.0, 200, 200);
-    ofDisableDepthTest();
-
+        ofDisableDepthTest();
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
+    ofSetBackgroundColor(ofColor(210));
     camera.begin();
     drawScene();
     camera.end();
-    /*float angle = ofMap(rotation->getValue(), 0.0, 1.0, 0.0, 360.0)* PI / 180.0;
-    float distance = 500;
-    
-    //camera.setPosition();
-    ofNode n = ofNode();
-    n.setPosition(distance * cos(angle), distance*sin(angle),-100);
-    n.draw();
-     */
 }
 
 //--------------------------------------------------------------
