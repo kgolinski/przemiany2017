@@ -77,19 +77,33 @@ class ofApp : public ofBaseApp{
         ofxDatGuiSlider* waterLevel;
         ofxDatGuiSlider* waterColor;
         ofxDatGuiSlider* waterOpacity;
+    
         ofxDatGuiSlider* climate;
-    
-    
-        ofxDatGuiSlider* foliageAmount;
-        ofxDatGuiSlider* foliageType;
-        ofxDatGuiSlider* foliageColor;
+        ofxDatGuiSlider* treeAmount;
+        ofxDatGuiSlider* treeType;
+        ofxDatGuiSlider* treeColor;
 
-        ofxDatGuiSlider* cameraAngle;
         ofxDatGuiSlider* rotation;
-        ofxDatGuiSlider* scale;
-        ofxDatGuiSlider* baseLevel;
+        ofxDatGuiSlider* cameraAngle;
+        ofxDatGuiSlider* cameraDistance;
+        ofxDatGuiSlider* cameraFov;
     
         ofxDatGuiToggle* heightToggle;
+        ofxDatGuiToggle* densityToggle;
+        ofxDatGuiToggle* erosionToggle;
+        ofxDatGuiToggle* dilationToggle;
+        ofxDatGuiToggle* groundColorToggle;
+        ofxDatGuiToggle* waterLevelToggle;
+        ofxDatGuiToggle* waterColorToggle;
+        ofxDatGuiToggle* waterOpacityToggle;
+        ofxDatGuiToggle* climateToggle;
+        ofxDatGuiToggle* treeAmountToggle;
+        ofxDatGuiToggle* treeTypeToggle;
+        ofxDatGuiToggle* treeColorToggle;
+        ofxDatGuiToggle* rotationToggle;
+        ofxDatGuiToggle* cameraAngleToggle;
+        ofxDatGuiToggle* cameraDistanceToggle;
+        ofxDatGuiToggle* cameraFovToggle;
     
         ofEasyCam camera;
         float size = 800;

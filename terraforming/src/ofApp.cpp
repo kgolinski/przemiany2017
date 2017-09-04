@@ -25,6 +25,9 @@ void ofApp::setup(){
     //guzik do zapisu screenshota
     //mozliwosc zamrozenia jakiegos parametru
     
+    ofEnableSmoothing();
+    ofSetVerticalSync(true);
+    
     receiver.setup(PORT);
     base.set(size, size, subdivisions, subdivisions);
     
@@ -54,18 +57,36 @@ void ofApp::setup(){
     waterOpacity = sliders->addSlider("Water Opacity", 0.0, 1.0, 0.4);
     sliders->addBreak();
     climate = sliders->addSlider("Climate", 0.0, 1.0, 0.5);
-    foliageAmount = sliders->addSlider("Tree Amount", 0.0, 1.0, 0.5); //!
-    foliageType = sliders->addSlider("Tree Type", 0.0, 1.0, 0.5); //!
-    foliageColor = sliders->addSlider("Tree Color", 0.0, 1.0, 0.5); //!
+    treeAmount = sliders->addSlider("Tree Amount", 0.0, 1.0, 0.5); //!
+    treeType = sliders->addSlider("Tree Type", 0.0, 1.0, 0.5); //!
+    treeColor = sliders->addSlider("Tree Color", 0.0, 1.0, 0.5); //!
     sliders->addBreak();
     rotation = sliders->addSlider("Plane Rotation", 0.0, 1.0, 0.6);
     cameraAngle = sliders->addSlider("Camera Angle", 0.0, 1.0, 0.6);
-    scale = sliders->addSlider("Scale", 0.0, 1.0, 0.2);
-    baseLevel = sliders->addSlider("Base Level", 0.0, 1.0, 0.5);
+    cameraDistance = sliders->addSlider("Camera Distance", 0.0, 1.0, 0.2);
+    cameraFov = sliders->addSlider("Camera FOV", 0.0, 1.0, 0.5);
     
     toggles = new ofxDatGui();
     toggles->setPosition(271, 0);
     heightToggle = toggles->addToggle("Height");
+    densityToggle = toggles->addToggle("Density");
+    erosionToggle = toggles->addToggle("Erosion");
+    dilationToggle = toggles->addToggle("Dilation");
+    toggles->addBreak();
+    groundColorToggle = toggles->addToggle("Ground Color");
+    waterLevelToggle = toggles->addToggle("Water Level");
+    waterColorToggle = toggles->addToggle("Water Color");
+    waterOpacityToggle = toggles->addToggle("Water Opacity");
+    toggles->addBreak();
+    climateToggle = toggles->addToggle("Climate");
+    treeAmountToggle = toggles->addToggle("Tree Amount");
+    treeTypeToggle = toggles->addToggle("Tree Type");
+    treeColorToggle = toggles->addToggle("Tree Color");
+    toggles->addBreak();
+    rotationToggle = toggles->addToggle("Rotation");
+    cameraAngleToggle = toggles->addToggle("Camera Angle");
+    cameraDistanceToggle = toggles->addToggle("Camera Distance");
+    cameraFovToggle = toggles->addToggle("Camera FOV");
     
     actions = new ofxDatGui();
     actions->setPosition(542, 0);
@@ -73,12 +94,12 @@ void ofApp::setup(){
     actions->addButton("Save screenshot (S)")->onButtonEvent(this, &ofApp::saveScreenshot);
     ofxDatGuiLog::quiet();
     
-    camera.setDistance(300.0f);
-    camera.setNearClip(0.01f);
-    camera.setFarClip(500.0f);
-    //camera.setPosition(0.4f, 0.2f, 0.8f);
-    camera.lookAt(ofVec3f(0.0f, 0.0f, 0.0f));
-    //camera.disableMouseInput();
+    //camera.setDistance(500.0);
+    //camera.setNearClip(0.0001);
+    //camera.setFarClip(1000.0);
+    
+    camera.lookAt(ofVec3f(0.0, 0.0, 0.0));
+    camera.disableMouseInput();
 }
 
 //--------------------------------------------------------------
@@ -134,40 +155,77 @@ void ofApp::update(){
     
     snowTex.setFromPixels(grayImage.getPixels());
     
+    //CAMERA
+    float angle = ofMap(rotation->getValue(), 0.0, 1.0, 0.0, 360.0)* PI / 180.0;
+    float dist = ofMap(cameraDistance->getValue(), 0.0, 1.0, 400.0, 1200.0);
+    float ca = ofMap(cameraAngle->getValue(), 0.0, 1.0, 0.0, 1200.0);
+    
+    camera.setPosition(dist * cos(angle), dist*sin(angle), ca);
+    camera.setFov(ofMap(cameraFov->getValue(), 0.0, 1.0, 60.0, 120.0));
+    camera.lookAt(ofVec3f(0.0, 0.0, 0.0), ofVec3f(0.0,0.0,1.0));
+    
     //OSC
     while(receiver.hasWaitingMessages()){
         ofxOscMessage m;
         receiver.getNextMessage(m);
-        if(m.getAddress() == "/height"){
-            height->setValue(m.getArgAsInt32(0));
-        }else if(m.getAddress() == "/density"){
-            density->setValue(m.getArgAsInt32(0));
+        if(m.getAddress() == "/height" && !heightToggle->getChecked()){
+            height->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/density" && !densityToggle->getChecked()){
+            density->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/erosion" && !erosionToggle->getChecked()){
+            erosion->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/dilation" && !dilationToggle->getChecked()){
+            dilation->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/groundColor" && !groundColorToggle->getChecked()){
+            groundColor->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/waterLevel" && !waterLevelToggle->getChecked()){
+            waterLevel->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/waterColor" && !waterColorToggle->getChecked()){
+            waterColor->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/waterOpacity" && !waterOpacityToggle->getChecked()){
+            waterOpacity->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/climate" && !climateToggle->getChecked()){
+            climate->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/treeAmount" && !treeAmountToggle->getChecked()){
+            treeAmount->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/treeType" && !treeTypeToggle->getChecked()){
+            treeType->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/treeColor" && !treeColorToggle->getChecked()){
+            treeColor->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/rotation" && !rotationToggle->getChecked()){
+            rotation->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/cameraAngle" && !cameraAngleToggle->getChecked()){
+            cameraAngle->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/cameraDistance" && !cameraDistanceToggle->getChecked()){
+            cameraDistance->setValue(m.getArgAsFloat(0));
+        }else if(m.getAddress() == "/cameraFov" && !cameraFovToggle->getChecked()){
+            cameraFov->setValue(m.getArgAsFloat(0));
         }else{
             ofLog() << m.getAddress();
         }
     }
 }
 
-
 void ofApp::drawScene(){
-    ofPushMatrix();
     
     ofEnableDepthTest();
+    //ofPushMatrix();
+    
     ofSetColor(255);
     
-    ofTranslate(ofGetWidth()/2.0, ofGetHeight()/2.0);
-    float s = ofMap(scale->getValue(), 0.0, 1.0, 0.1, 2.0);
-    ofScale(s,s,s);
-    ofTranslate(0, 0, ofMap(baseLevel->getValue(), 0.0, 1.0, -200.0*s, 200.0*s));
-    ofRotateX(ofMap(cameraAngle->getValue(), 0.0, 1.0, 15.0, 90.0));
-    ofRotateZ(ofMap(rotation->getValue(), 0.0, 1.0, 0.0, 360.0));
+    //ofTranslate(ofGetWidth()/2.0, ofGetHeight()/2.0);
+    //float s = ofMap(distance->getValue(), 0.0, 1.0, 0.1, 2.0);
+    //ofScale(s,s,s);
+    //ofTranslate(0, 0, ofMap(baseLevel->getValue(), 0.0, 1.0, -200.0*s, 200.0*s));
+    //ofRotateX(ofMap(cameraAngle->getValue(), 0.0, 1.0, 15.0, 90.0));
+    //ofRotateZ(ofMap(rotation->getValue(), 0.0, 1.0, 0.0, 360.0));
     //ofRotateZ(rotation->getValue());
     
     groundTex.getTextureReference().bind();
     groundShader.begin();
     groundShader.setUniformTexture("tex1", snowTex, 2);
     groundShader.setUniformTexture("tex1", snowTex, 2);
-    groundShader.setUniform1f("height", ofMap(height->getValue(), 0.0, 1.0, 5.0, 600.0)*s);
+    groundShader.setUniform1f("height", ofMap(height->getValue(), 0.0, 1.0, 5.0, 600.0));
     ofColor outGround = groundColor1;
     outGround.lerp(groundColor2, groundColor->getValue());
     groundShader.setUniform3f("color", outGround.r/255.0, outGround.g/255.0, outGround.b/255.0);
@@ -184,15 +242,16 @@ void ofApp::drawScene(){
     ofColor outWater = waterColor1;
     outWater.lerp(waterColor2, waterColor->getValue());
     
-    waterShader.setUniform4f("color", outWater.r/255.0, outWater.g/255.0, outWater.b/255.0, ofMap(waterOpacity->getValue(), 0.0, 1.0, 0.1, 0.85));
-    ofPushMatrix();
-    ofTranslate(0, 0, ofMap(waterLevel->getValue(), 0.0, 1.0, -300.0, 300.0)*s);
+    waterShader.setUniform4f("color", outWater.r/255.0, outWater.g/255.0, outWater.b/255.0,
+                             ofMap(waterOpacity->getValue(), 0.0, 1.0, 0.1, 0.85));
+    //ofPushMatrix();
+    ofTranslate(0, 0, ofMap(waterLevel->getValue(), 0.0, 1.0, -300.0, 300.0));
     water.draw();
     
     //ground.drawWireframe();
     waterShader.end();
     waterTex.getTextureReference().unbind();
-    ofPopMatrix();
+    //ofPopMatrix();
     
     //ofSetColor(255,0,0);
     //base.drawWireframe();
@@ -228,16 +287,25 @@ void ofApp::drawScene(){
      }
      ofEndShape(true);
      */
-    ofDisableDepthTest();
-    ofPopMatrix();
+    
+    //ofPopMatrix();
     //snowTex.draw(ofGetWidth()-200.0,ofGetHeight()-200.0, 200, 200);
+    ofDisableDepthTest();
 
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
-    //.camera.begin();
+    camera.begin();
     drawScene();
-    //camera.end();
+    camera.end();
+    /*float angle = ofMap(rotation->getValue(), 0.0, 1.0, 0.0, 360.0)* PI / 180.0;
+    float distance = 500;
+    
+    //camera.setPosition();
+    ofNode n = ofNode();
+    n.setPosition(distance * cos(angle), distance*sin(angle),-100);
+    n.draw();
+     */
 }
 
 //--------------------------------------------------------------
