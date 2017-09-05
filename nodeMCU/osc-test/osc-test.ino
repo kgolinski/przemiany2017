@@ -8,28 +8,27 @@
 WiFiUDP Udp;
 const IPAddress outIp(192, 168, 0, 105);
 const unsigned int outPort = 12345;
+char message[] = "/height";
+int lastReading = 1;
 
 void setup() {
-  
   Serial.begin(115200);
   wifi_setup();
-  
-}
 
-void wifi_setup(){
+}
+void wifi_setup() {
   delay(10);
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(SSID);
-  
+
   WiFi.begin(SSID, KEY);
-  
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
@@ -37,15 +36,24 @@ void wifi_setup(){
 }
 
 void loop() {
-  OSCMessage msg("/height");
-  float val = (sin(millis()/1000.0)+1.0)/2.0;
-  //Serial.println(val);
-  msg.add( val);
+
   
-  Udp.beginPacket(outIp, outPort);
-  msg.send(Udp);
-  Udp.endPacket();
-  msg.empty();
+  int reading = analogRead(A0);
+  
+  if (reading != lastReading) {
+    //float val = (sin(millis()/1000.0)+1.0)/2.0;
+    float val = reading / 1024.0;
+    Serial.println(val);
+    OSCMessage msg(message);
+    msg.add(val);
+
+    Udp.beginPacket(outIp, outPort);
+    msg.send(Udp);
+    Udp.endPacket();
+    msg.empty();
+    lastReading = reading;
+  }
+  delay(10);
 }
 
 
