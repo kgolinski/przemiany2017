@@ -39,7 +39,7 @@ class ofApp : public ofBaseApp{
         ofShader groundShader, waterShader;
         ofImage groundTex, waterTex, snowTex;
         //ofFbo treeFbo;
-    
+        //ofLight light;
         ofxCvGrayscaleImage grayImage;
     
         ofxDatGui* sliders;

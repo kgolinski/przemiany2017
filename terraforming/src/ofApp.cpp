@@ -15,6 +15,8 @@ void ofApp::setup(){
     
     groundShader.load("ground");
     waterShader.load("water");
+    //light.setAmbientColor(ofColor(0, 0, 0));
+    //light.setPosition(0,0, 300);
     
     waterTex.allocate(subdivisions, subdivisions, OF_IMAGE_GRAYSCALE);
     groundTex.allocate(subdivisions, subdivisions, OF_IMAGE_GRAYSCALE);
@@ -86,6 +88,7 @@ void ofApp::setup(){
     actions->setPosition(542, 0);
     actions->addButton("Save screenshot (S)")->onButtonEvent(this, &ofApp::saveScreenshot);
     actions->addButton("Regenerate seed (R)")->onButtonEvent(this, &ofApp::regenerateSeed);
+    actions->addFRM();
     ofxDatGuiLog::quiet();
     
     sliders->setVisible(false);
@@ -97,7 +100,7 @@ void ofApp::setup(){
     noiseSeed = ofRandom(100.0);
     
     for(int i=0;i<maxTreeCount;i++){
-        trees.push_back(ofVec2f(ofRandom(size),ofRandom(size)));
+        trees.push_back(ofVec2f(ofRandom(1,size-1),ofRandom(1,size-1)));
     }
 }
 
@@ -220,7 +223,7 @@ void ofApp::drawScene(){
     ofEnableDepthTest();
     
     ofSetColor(255);
-
+    
     groundTex.getTextureReference().bind();
     groundShader.begin();
     groundShader.setUniformTexture("tex1", snowTex, 2);
@@ -250,20 +253,45 @@ void ofApp::drawScene(){
     ofPopMatrix();
     waterShader.end();
     waterTex.getTextureReference().unbind();
+    
+    
+    //light.enable();
     drawTrees();
+    //light.disable();
     ofDisableDepthTest();
+    
 }
 //--------------------------------------------------------------
 void ofApp::drawTrees(){
+    ofColor outTree = treeColor1;
+    outTree.lerp(treeColor2, treeColor->getValue());
+    ofSetSphereResolution(3+8.0*treeType->getValue());
+    float treeHeight = 10*treeType->getValue();
+    float treeTrunkWeight = 5;
     for(int i=0;i<ofMap(treeAmount->getValue(),0.0,1.0,0, maxTreeCount); i++){
         ofNode node;
         float maxHeight = ofMap(height->getValue(), 0.0, 1.0, 5.0, 600.0);
-        float h = (groundTex.getColor(trees[i].x/4.0, trees[i].y/4.0).r/255.0)*maxHeight;
-        node.setPosition(trees[i].x-400.0, trees[i].y-400.0, h);
-        node.draw();
+        float x = trees[i].x-400.0;
+        float y =trees[i].y-400.0;
+        float z = (groundTex.getColor(trees[i].x/4.0, trees[i].y/4.0).r/255.0)*maxHeight;
+        
+        ofSetColor(20);
+        ofSetLineWidth(treeTrunkWeight);
+        ofDrawLine(x, y, z, x, y, z + treeHeight);
+        
+        ofSetColor(outTree);
+        //ofNoFill();
+        ofSetLineWidth(1);
+        ofDrawSphere(x, y, z + treeHeight, 5.0);
+        ofSeedRandom(i);
+        
+        ofDrawSphere(x+ofRandom(-3,3), y+ofRandom(-3,3), z + treeHeight + 1 + ofRandom(-1,1), 5.0);
+        ofDrawSphere(x+ofRandom(-3,3), y+ofRandom(-3,3), z + treeHeight - 1 + ofRandom(-1,1), 5.0);
+        //node.setPosition(x, y, z);
+        //node.draw();
     }
+    ofSeedRandom(ofRandom(1000.0));
 }
-
 
 //--------------------------------------------------------------
 void ofApp::draw(){
