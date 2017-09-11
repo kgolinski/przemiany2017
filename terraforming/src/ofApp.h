@@ -14,7 +14,7 @@ class ofApp : public ofBaseApp{
 		void update();
         void drawScene();
 		void draw();
-
+        void drawTrees();
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -26,18 +26,19 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-    
+        void regenerateGround();
         void saveScreenshot(ofxDatGuiButtonEvent e);
         void regenerateSeed(ofxDatGuiButtonEvent e);
     
         ofxOscReceiver receiver;
     
         ofPlanePrimitive base;
-        ofPlanePrimitive ground;
+        ofPlanePrimitive groundPrimitive;
+        ofMesh ground;
         ofPlanePrimitive water;
         ofShader groundShader, waterShader;
         ofImage groundTex, waterTex, snowTex;
-        ofFbo treeFbo;
+        //ofFbo treeFbo;
     
         ofxCvGrayscaleImage grayImage;
     
@@ -85,6 +86,10 @@ class ofApp : public ofBaseApp{
         ofEasyCam camera;
         float size = 800;
         float subdivisions = 200;
+        float lastHeight = 0;
+        float lastDensity = 0;
+        float lastErosion = 0;
+        float lastDilation = 0;
     
         ofColor groundColor1 = ofColor::fromHex(0x502b00);
         ofColor groundColor2 = ofColor::fromHex(0x297d00);

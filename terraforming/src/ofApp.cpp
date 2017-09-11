@@ -8,6 +8,8 @@ void ofApp::setup(){
     ofEnableAntiAliasing();
     ofEnableAlphaBlending();
     
+    //ofSetLogLevel(OF_LOG_ERROR);
+    
     receiver.setup(PORT);
     base.set(size, size, subdivisions, subdivisions);
     
@@ -26,13 +28,14 @@ void ofApp::setup(){
     settings.internalformat = GL_RGBA;
     settings.numSamples = 8;
     
-    treeFbo.allocate(settings);
+    //treeFbo.allocate(settings);
     
     //treeFbo.allocate(size,size, GL_RGBA);
     
-    ground.set(size, size, subdivisions, subdivisions);
+    groundPrimitive.set(size, size, subdivisions, subdivisions);
+    ground = groundPrimitive.getMesh();
     water.set(size, size, subdivisions, subdivisions);
-    ground.mapTexCoordsFromTexture(groundTex.getTextureReference());
+    //ground.mapTexCoordsFromTexture(groundTex.getTextureReference()); //?
     water.mapTexCoordsFromTexture(waterTex.getTextureReference());
 
     sliders = new ofxDatGui();
@@ -85,7 +88,6 @@ void ofApp::setup(){
     actions->addButton("Regenerate seed (R)")->onButtonEvent(this, &ofApp::regenerateSeed);
     ofxDatGuiLog::quiet();
     
-    
     sliders->setVisible(false);
     toggles->setVisible(false);
     actions->setVisible(false);
@@ -129,6 +131,13 @@ void ofApp::update(){
     
     groundTex.setFromPixels(grayImage.getPixels());
     
+    if( lastHeight != (float)height->getValue() || lastDensity != (float)density->getValue() || lastErosion != (float)erosion->getValue() || lastDilation != (float)dilation->getValue() ){
+        regenerateGround();
+        lastHeight = height->getValue();
+        lastDensity = density->getValue();
+        lastErosion = erosion->getValue();
+        lastDilation = dilation->getValue();
+    }
     //WATER
     noiseScale = 0.05;
     float noiseVel = ofGetElapsedTimef()/1.0;
@@ -149,36 +158,11 @@ void ofApp::update(){
     //SNOW
     grayImage.resize(size, size);
     grayImage.blurHeavily();
-    grayImage.threshold(climate->getValue()*255);
+    grayImage.threshold(climate->getValue()*255.0);
     grayImage.blurHeavily();
     grayImage.dilate();
     
     snowTex.setFromPixels(grayImage.getPixels());
-    
-    
-    //TREES
-    treeFbo.begin();
-    ofEnableSmoothing();
-    ofEnableAlphaBlending();
-    //ofEnableAntiAliasing();
-    //glEnable(GL_BLEND);
-    
-    ofClear(255.0,255.0,255.0, 0);
-    
-    ofColor outTree = treeColor1;
-    outTree.lerp(treeColor2, treeColor->getValue());
-    
-    
-    for(int i=0;i<ofMap(treeAmount->getValue(),0.0,1.0,0, maxTreeCount);i++){
-        //ofFill();
-        float max = ofMap(treeType->getValue(),0.0, 1.0, 2.0, 10.0);
-        for(int j = 0; j < max; j++){
-            ofSetColor(outTree,(j/max)*255.0);
-            ofDrawCircle(trees[i].x, trees[i].y, max-j);
-        }
-    }
-    treeFbo.end();
-    
     
     //CAMERA
     float angle = ofMap(rotation->getValue(), 0.0, 1.0, 0.0, 360.0)* PI / 180.0;
@@ -240,8 +224,8 @@ void ofApp::drawScene(){
     groundTex.getTextureReference().bind();
     groundShader.begin();
     groundShader.setUniformTexture("tex1", snowTex, 2);
-    groundShader.setUniformTexture("tex2", treeFbo.getTextureReference(0), 1);
-    groundShader.setUniform1f("height", ofMap(height->getValue(), 0.0, 1.0, 5.0, 600.0));
+    //groundShader.setUniformTexture("tex2", treeFbo.getTextureReference(0), 1);
+    //groundShader.setUniform1f("height", ofMap(height->getValue(), 0.0, 1.0, 5.0, 600.0));
     ofColor outGround = groundColor1;
     outGround.lerp(groundColor2, groundColor->getValue());
     groundShader.setUniform3f("color", outGround.r/255.0, outGround.g/255.0, outGround.b/255.0);
@@ -266,9 +250,20 @@ void ofApp::drawScene(){
     ofPopMatrix();
     waterShader.end();
     waterTex.getTextureReference().unbind();
-    
+    drawTrees();
     ofDisableDepthTest();
 }
+//--------------------------------------------------------------
+void ofApp::drawTrees(){
+    for(int i=0;i<ofMap(treeAmount->getValue(),0.0,1.0,0, maxTreeCount); i++){
+        ofNode node;
+        float maxHeight = ofMap(height->getValue(), 0.0, 1.0, 5.0, 600.0);
+        float h = (groundTex.getColor(trees[i].x/4.0, trees[i].y/4.0).r/255.0)*maxHeight;
+        node.setPosition(trees[i].x-400.0, trees[i].y-400.0, h);
+        node.draw();
+    }
+}
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -276,10 +271,27 @@ void ofApp::draw(){
     camera.begin();
     drawScene();
     camera.end();
-    
-    //treeFbo.draw(ofGetWidth()-treeFbo.getWidth(),0);
 }
-
+//--------------------------------------------------------------
+void ofApp::regenerateGround(){
+    //ofLog() << "regenerating ground";
+    vector<ofVec3f> vertices = ground.getVertices();
+    float maxHeight = ofMap(height->getValue(), 0.0, 1.0, 5.0, 600.0);
+    //float ma
+    for(int i=0;i<vertices.size();i++){
+        ofVec3f vertex = ofVec3f(vertices[i].x, vertices[i].y, 0.0);
+        float x = vertex.x/4.0+100.0;
+        float y = vertex.y/4.0 + 100.0;
+        
+        float h = (groundTex.getColor(x, y).r/255.0)*maxHeight;
+        if(x == 0 || y == 0 || x==200.0 || y==200.0){ //boczki
+            h = -300.0;
+        }
+        vertex.z=h;
+        ground.setVertex(i, vertex);
+        ground.setTexCoord(i, ofVec2f(x, y));
+    }
+}
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if(key==OF_KEY_TAB){
@@ -291,6 +303,7 @@ void ofApp::keyPressed(int key){
         ofSaveFrame();
     }else if(key == 'R' || key == 'r'){
         noiseSeed = ofRandom(100.0);
+        height->setValue(ofRandom(1));
     }
 }
 
@@ -357,4 +370,6 @@ void ofApp::regenerateSeed(ofxDatGuiButtonEvent e)
 {
     cout << "onButtonEvent: " << e.target->getLabel() << endl;
     noiseSeed = ofRandom(100.0);
+    height->setValue(ofRandom(1));
+    //regenerateGround();
 }
