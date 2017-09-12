@@ -283,10 +283,10 @@ void ofApp::drawTrees(){
         //ofNoFill();
         ofSetLineWidth(1);
         ofDrawSphere(x, y, z + treeHeight, 5.0);
-        ofSeedRandom(i);
+        //ofSeedRandom(i);
         
-        ofDrawSphere(x+ofRandom(-3,3), y+ofRandom(-3,3), z + treeHeight + 1 + ofRandom(-1,1), 5.0);
-        ofDrawSphere(x+ofRandom(-3,3), y+ofRandom(-3,3), z + treeHeight - 1 + ofRandom(-1,1), 5.0);
+        //ofDrawSphere(x+ofRandom(-3,3), y+ofRandom(-3,3), z + treeHeight + 1 + ofRandom(-1,1), 5.0);
+        //ofDrawSphere(x+ofRandom(-3,3), y+ofRandom(-3,3), z + treeHeight - 1 + ofRandom(-1,1), 5.0);
         //node.setPosition(x, y, z);
         //node.draw();
     }
