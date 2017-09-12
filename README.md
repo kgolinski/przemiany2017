@@ -14,8 +14,8 @@ w polu Additional Boards Manager URLs
 ### 3. Biblioteka
 1. Wejść do managera bibliotek (Sketch -> Include Library -> Manage Libraries), wyszukać i zainstalować bibliotekę __Open Sound Control (OSC) for ESP8266__
 
-### Sterownik NodeMCU
-1. Ściągnąć odpowiednią wersję sterownika [stąd]( https://github.com/nodemcu/nodemcu-devkit/wiki/Getting-Started-on-OSX) i zainstalować
+### 4. Sterownik NodeMCU
+1. Ściągnąć odpowiednią dla systemu wersję sterownika [stąd]( https://github.com/nodemcu/nodemcu-devkit/wiki/Getting-Started-on-OSX) i zainstalować
 
 ### Wgrywanie firmware do NodeMCU (opcjonalnie)
 ```
