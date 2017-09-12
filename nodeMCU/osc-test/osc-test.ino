@@ -47,6 +47,7 @@ void loop() {
   if (reading != lastReading) {
     float val = reading / 1024.0;
     Serial.println(val);
+    //val = map(val, min, max, 0.0, 1.0);
     sendMessage(val);
     lastReading = reading;
   }
