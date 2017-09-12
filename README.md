@@ -6,9 +6,7 @@
 1. Pobrać [Arduino IDE](https://www.arduino.cc/en/Main/Software) i zainstalować.
 
 ### 2. Zainstalowanie obsługi modułów ESP8266
-1.  Wejść do Ustawień Arduino IDE (File -> Preferences) i dodać link ```
-http://arduino.esp8266.com/stable/package_esp8266com_index.json
-```
+1.  Wejść do Ustawień Arduino IDE (File -> Preferences) i dodać link `http://arduino.esp8266.com/stable/package_esp8266com_index.json`
 w polu Additional Boards Manager URLs
 
 2. Wejść do managera płytek (Tools -> Boards -> Boards Manger, wyszukać i zainstalować rodzinę płytek __ESP8266__
