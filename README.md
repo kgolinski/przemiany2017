@@ -17,11 +17,6 @@ w polu Additional Boards Manager URLs
 ### 4. Sterownik NodeMCU
 1. Ściągnąć odpowiednią dla systemu wersję sterownika [stąd]( https://github.com/nodemcu/nodemcu-devkit/wiki/Getting-Started-on-OSX) i zainstalować
 
-### Wgrywanie firmware do NodeMCU (opcjonalnie)
-```
-python esptool.py --port=/dev/cu.SLAB_USBtoUART write_flash 0x00000 nodemcu_float_0.9.6-dev_20150704.bin
-```
-
 ## Schematy układów elektronicznych:
 
 ### Fotorezystor  ([link](https://botland.com.pl/fotorezystory/1563-fotorezystor-20-30-k-gl5537-1.html))
