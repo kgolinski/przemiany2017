@@ -103,5 +103,5 @@ class ofApp : public ofBaseApp{
         float noiseSeed;
     
         vector<ofVec2f> trees;
-        int maxTreeCount = 2000;
+        int maxTreeCount = 1000;
 };
