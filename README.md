@@ -15,7 +15,7 @@ w polu Additional Boards Manager URLs
 1. Wejść do managera bibliotek (Sketch -> Include Library -> Manage Libraries), wyszukać i zainstalować bibliotekę __Open Sound Control (OSC) for ESP8266__
 
 ### 4. Sterownik NodeMCU
-1. Ściągnąć odpowiednią dla systemu wersję sterownika [stąd]( https://github.com/nodemcu/nodemcu-devkit/wiki/Getting-Started-on-OSX) i zainstalować
+1. Ściągnąć odpowiednią dla systemu wersję sterownika [stąd]( https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers) i zainstalować
 
 ## Schematy układów elektronicznych:
 
