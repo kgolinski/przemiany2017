@@ -12,7 +12,7 @@ w polu Additional Boards Manager URLs
 2. Wejść do managera płytek (Tools -> Boards -> Boards Manger, wyszukać i zainstalować rodzinę płytek __ESP8266__
 
 ### 3. Biblioteka
-1. Wejść do managera bibliotek (Sketch -> Include Library -> Manage Libraries), wyszukać i zainstalować bibliotekę __Open Sound Control (OSC) for ESP8266__
+1. Wejść do managera bibliotek (Sketch -> Include Library -> Manage Libraries), wyszukać i zainstalować bibliotekę __Open Sound Control (OSC) for ESP8266__. Biblioteka dostępna również [tu](https://github.com/stahlnow/OSCLib-for-ESP8266)
 
 ### 4. Sterownik NodeMCU
 1. Ściągnąć odpowiednią dla systemu wersję sterownika [stąd]( https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers) i zainstalować
@@ -37,8 +37,9 @@ w polu Additional Boards Manager URLs
 
 ## Współpraca
 ### CEZAMAT (eksperci technologiczni)
-* dr Marcin Lelit
-* dr Maciej Haras
+* Marcin Lelit
+* dr inż. Maciej Haras
+* Grzegorz Daszykowski
 
 ### Centrum Nauki Kopernik (eksperci metodologiczni)
 * Barbara Malinowska
@@ -47,5 +48,4 @@ w polu Additional Boards Manager URLs
 * Maciej Mieczkowski
 
 ## Koordynacja
-* Adam Mandziejewski
 * Mateusz Pawełczuk
