@@ -42,7 +42,7 @@ void ofApp::setup(){
 
     sliders = new ofxDatGui();
 
-    height = sliders->addSlider("Height", 0.0, 1.0, 0.2);
+    height = sliders->addSlider("Height", 0.0, 1.0, 0.0);//0.2
     density = sliders->addSlider("Density", 0.0, 1.0, 0.0);
     erosion = sliders->addSlider("Erosion", 0.0, 1.0, 0.0);
     dilation = sliders->addSlider("Dilation", 0.0, 1.0, 0.0);
@@ -50,17 +50,17 @@ void ofApp::setup(){
     groundColor = sliders->addSlider("Ground Color", 0.0, 1.0, 0.0);
     waterLevel = sliders->addSlider("Water Level", 0.0, 1.0, 0.5);
     waterColor = sliders->addSlider("Water Color", 0.0, 1.0, 0.5);
-    waterOpacity = sliders->addSlider("Water Opacity", 0.0, 1.0, 0.4);
+    waterOpacity = sliders->addSlider("Water Opacity", 0.0, 1.0, 0.0); //0.4
     sliders->addBreak();
-    climate = sliders->addSlider("Climate", 0.0, 1.0, 0.8);
-    treeAmount = sliders->addSlider("Tree Amount", 0.0, 1.0, 0.5); //!
-    treeType = sliders->addSlider("Tree Type", 0.0, 1.0, 0.5); //!
-    treeColor = sliders->addSlider("Tree Color", 0.0, 1.0, 0.5); //!
+    climate = sliders->addSlider("Climate", 0.0, 1.0, 1.0);//0.8
+    treeAmount = sliders->addSlider("Tree Amount", 0.0, 1.0, 0.0); //0.5
+    treeType = sliders->addSlider("Tree Type", 0.0, 1.0, 0.0); //0.5
+    treeColor = sliders->addSlider("Tree Color", 0.0, 1.0, 0.0); //0.5
     sliders->addBreak();
     rotation = sliders->addSlider("Plane Rotation", 0.0, 1.0, 0.0);
-    cameraAngle = sliders->addSlider("Camera Angle", 0.0, 1.0, 0.6);
-    cameraDistance = sliders->addSlider("Camera Distance", 0.0, 1.0, 0.2);
-    cameraFov = sliders->addSlider("Camera FOV", 0.0, 1.0, 0.5);
+    cameraAngle = sliders->addSlider("Camera Angle", 0.0, 1.0, 0.0);//0.6
+    cameraDistance = sliders->addSlider("Camera Distance", 0.0, 1.0, 0.0);//0.2
+    cameraFov = sliders->addSlider("Camera FOV", 0.0, 1.0, 0.1);
     
     toggles = new ofxDatGui();
     toggles->setPosition(271, 0);
